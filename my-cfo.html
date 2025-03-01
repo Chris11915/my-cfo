@@ -263,11 +263,6 @@
                         <input type="number" id="rentVsBuyAppreciationRate" min="0" step="0.1" value="3">
                         <div class="tooltip">Expected annual increase in home value.</div>
                     </div>
-                    <div class="input-group">
-                        <label for="rentVsBuyClosingCosts">Closing Costs ($)</label>
-                        <input type="number" id="rentVsBuyClosingCosts" min="0" step="100" value="5000">
-                        <div class="tooltip">One-time costs when buying the home.</div>
-                    </div>
                 </div>
                 <div class="form-col">
                     <h3>Renting Inputs</h3>
@@ -290,11 +285,6 @@
                         <label for="rentVsBuyTimeHorizon">Time Horizon (years)</label>
                         <input type="number" id="rentVsBuyTimeHorizon" min="1" step="1" value="10">
                         <div class="tooltip">Number of years you plan to stay in the home or rent.</div>
-                    </div>
-                    <div class="input-group">
-                        <label for="rentVsBuyInflationRate">Inflation Rate (% per year)</label>
-                        <input type="number" id="rentVsBuyInflationRate" min="0" step="0.1" value="2">
-                        <div class="tooltip">General inflation rate for adjusting future costs.</div>
                     </div>
                 </div>
             </div>
@@ -339,16 +329,6 @@
                         <label for="netWorthVehicles">Vehicles ($)</label>
                         <input type="number" id="netWorthVehicles" min="0" step="1000" value="0">
                         <div class="tooltip">Current market value of cars, boats, etc.</div>
-                    </div>
-                    <div class="input-group">
-                        <label for="netWorthBusiness">Business Ownership ($)</label>
-                        <input type="number" id="netWorthBusiness" min="0" step="1000" value="0">
-                        <div class="tooltip">Estimated value of any businesses you own.</div>
-                    </div>
-                    <div class="input-group">
-                        <label for="netWorthCollectibles">Collectibles ($)</label>
-                        <input type="number" id="netWorthCollectibles" min="0" step="1000" value="0">
-                        <div class="tooltip">Value of art, jewelry, or other collectibles.</div>
                     </div>
                 </div>
                 <div class="form-col">
@@ -561,12 +541,10 @@
             const insurance = parseFloat(document.getElementById('rentVsBuyInsurance').value) || 0;
             const maintenanceRate = parseFloat(document.getElementById('rentVsBuyMaintenanceRate').value) / 100 || 0;
             const appreciationRate = parseFloat(document.getElementById('rentVsBuyAppreciationRate').value) / 100 || 0;
-            const closingCosts = parseFloat(document.getElementById('rentVsBuyClosingCosts').value) || 0;
             const monthlyRent = parseFloat(document.getElementById('rentVsBuyMonthlyRent').value) || 0;
             const rentIncreaseRate = parseFloat(document.getElementById('rentVsBuyRentIncreaseRate').value) / 100 || 0;
             const investmentReturnRate = parseFloat(document.getElementById('rentVsBuyInvestmentReturnRate').value) / 100 || 0;
             const timeHorizon = parseFloat(document.getElementById('rentVsBuyTimeHorizon').value) || 0;
-            const inflationRate = parseFloat(document.getElementById('rentVsBuyInflationRate').value) / 100 || 0;
 
             if (timeHorizon <= 0 || loanTerm <= 0) {
                 alert('Time horizon and loan term must be greater than zero.');
@@ -581,9 +559,9 @@
             const monthlyPayment = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
             const annualPropertyTax = homePrice * propertyTaxRate;
             const annualMaintenance = homePrice * maintenanceRate;
-            let totalBuyingCost = downPayment + closingCosts;
+            let totalBuyingCost = downPayment;
             for (let t = 1; t <= timeHorizon; t++) {
-                totalBuyingCost += (monthlyPayment * 12 + annualPropertyTax + insurance + annualMaintenance) * Math.pow(1 + inflationRate, t - 1);
+                totalBuyingCost += (monthlyPayment * 12 + annualPropertyTax + insurance + annualMaintenance);
             }
             const homeValue = homePrice * Math.pow(1 + appreciationRate, timeHorizon);
             const equity = homeValue - (loanAmount * (Math.pow(1 + monthlyRate, numPayments) - Math.pow(1 + monthlyRate, timeHorizon * 12)) / (Math.pow(1 + monthlyRate, numPayments) - 1));
@@ -592,7 +570,7 @@
             let totalRentPaid = 0;
             let currentRent = monthlyRent;
             for (let t = 1; t <= timeHorizon; t++) {
-                totalRentPaid += currentRent * 12 * Math.pow(1 + inflationRate, t - 1);
+                totalRentPaid += currentRent * 12;
                 currentRent *= (1 + rentIncreaseRate);
             }
             const investmentValue = downPayment * Math.pow(1 + investmentReturnRate, timeHorizon);
@@ -633,9 +611,7 @@
             const retirement = parseFloat(document.getElementById('netWorthRetirement').value) || 0;
             const realEstate = parseFloat(document.getElementById('netWorthRealEstate').value) || 0;
             const vehicles = parseFloat(document.getElementById('netWorthVehicles').value) || 0;
-            const business = parseFloat(document.getElementById('netWorthBusiness').value) || 0;
-            const collectibles = parseFloat(document.getElementById('netWorthCollectibles').value) || 0;
-            const totalAssets = cash + investments + retirement + realEstate + vehicles + business + collectibles;
+            const totalAssets = cash + investments + retirement + realEstate + vehicles;
 
             const mortgage = parseFloat(document.getElementById('netWorthMortgage').value) || 0;
             const loans = parseFloat(document.getElementById('netWorthLoans').value) || 0;
